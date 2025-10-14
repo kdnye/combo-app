@@ -44,6 +44,12 @@ Services portal.
 
 ## Quick Start
 
+> **Tip:** The Docker Compose files now include development-friendly defaults
+> for passwords and optional environment variables. You can run
+> `docker compose up` immediately in Codespaces or on a local laptop and
+> override the credentials later by exporting your own values or adding them to
+> `.env`.
+
 1. Install Python 3.8 or newer.
 2. Copy `.env.example` to `.env` and fill in keys, database info, and the
    Postgres container variables.
