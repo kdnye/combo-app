@@ -51,7 +51,7 @@ SQLite database inside the writable application directory.
 
 ## Developer tooling
 
-- **Docker Compose:** `docker compose -f infra/compose/dev.yml up --build` now launches the Core Freight Services launcher (Next.js, port 3000), the expenses UI (Flask, port 8080), the quote tool API (Flask, port 5000), and the supporting Postgres instance. Each service binds to a unique port so you can exercise cross-app workflows locally while the launcher points at the containerised backends by default.
+- **Docker Compose:** `docker compose up --build` now launches the Core Freight Services launcher (Next.js, port 3000), the expenses UI (Flask, port 8080), the quote tool API (Flask, port 5000), and the supporting Postgres instance. Each service binds to a unique port so you can exercise cross-app workflows locally while the launcher points at the containerised backends by default. The former `infra/compose/dev.yml` layout is still available if you need a Compose file scoped to the infrastructure assets.
 - **Continuous Integration:** GitHub Actions workflows lint and test each application when their subtrees change. See `.github/workflows/` for details on the Python version and commands executed per app.
 - **Shared code:** Place reusable Python modules in `packages/` and import them from applications as needed.
 
