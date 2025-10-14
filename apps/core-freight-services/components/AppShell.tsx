@@ -4,9 +4,9 @@ import { PreferencesProvider } from '@/components/preferences/preferences-provid
 import { AuthProvider } from '@/components/auth/auth-provider';
 import { BrandLogo } from '@/components/BrandLogo';
 import { Button } from '@/components/ui/button';
-import { TopNav } from '@/components/navigation/TopNav';
+import { TopNav, type NavLink } from '@/components/navigation/TopNav';
 
-const navLinks = [
+const navLinks: NavLink[] = [
   { href: '/', label: 'Dashboard' },
   { href: '/settings', label: 'Settings' }
 ];
