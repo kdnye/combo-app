@@ -8,9 +8,34 @@ from typing import Any
 
 from flask import Flask, current_app, g
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.append(str(PROJECT_ROOT))
+
+def _add_repo_root_to_path() -> None:
+    """Ensure the monorepo root is on ``sys.path`` when running in Docker.
+
+    The expenses service imports shared utilities from ``packages/``. When the
+    application is installed as a wheel inside the container the package lives
+    under ``/app/fsi_expenses_web`` which is only two levels deep, so the
+    previous ``parents[3]`` lookup raised :class:`IndexError`. This helper walks
+    upward from the current module until it finds a directory containing the
+    ``packages`` folder and appends that path to ``sys.path`` if it is missing.
+
+    External dependencies:
+        * Relies on :mod:`pathlib` to traverse parent directories.
+        * Mutates :data:`sys.path` so imports such as ``packages.fsi_common``
+          continue to work inside the Docker runtime.
+    """
+
+    root_marker = "packages"
+    current = Path(__file__).resolve()
+    for candidate in (current.parent, *current.parents):
+        if (candidate / root_marker).exists():
+            root = str(candidate)
+            if root not in sys.path:
+                sys.path.insert(0, root)
+            return
+
+
+_add_repo_root_to_path()
 
 
 from .config import AppConfig, load_config  # noqa: E402
