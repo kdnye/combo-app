@@ -1,142 +1,42 @@
-README.md
 # combo-app
 
-Overview
+Unified home for the three Freight Services Inc. internal tools that previously lived in separate repositories. The goal of thi
+s monorepo is to make it easy to operate every app together while preserving their existing build and deployment workflows.
 
-This repo hosts multiple app modules that need to be consolidated into one Dockerized system that runs on an internal server. Specific HTTP routes can be optionally exposed to the public internet through a reverse proxy. Goal: one build, consistent ops, minimal toil.
+## Repository layout
 
-Features
+```text
+apps/
+  expenses/        # Expense Report Builder SPA
+  hana-inventory/  # Hana operating table inventory checker (Apps Script)
+  quote-tool/      # Hotshot freight quote management portal
+agents.md          # Governance and workflow guidance for the monorepo
+```
 
-Monorepo with shared packages
+Each application keeps its own Dockerfiles, documentation, and tests. When new shared code or infrastructure is introduced, add
+ it under `packages/` or `infra/` following the guidance in `agents.md`.
 
-Standard Docker/Compose stack (Postgres, Redis optional)
+## Working with the applications
 
-Pluggable ingress (SWAG/Traefik/NGINX Proxy Manager)
+| App | Description | Primary entry point |
+| --- | ----------- | ------------------- |
+| Expenses | Offline-capable web client for assembling reimbursable expense reports and uploading receipts. | `apps/expenses/index.html` (served statically) |
+| Hana Inventory | Google Apps Script that audits the "Mizuho Inventory" Google Sheet and emails weekly alerts when counts drift. | `apps/hana-inventory/app` |
+| Hotshot Quote Tool | Flask application with Alembic migrations and utilities for calculating freight quotes. | `apps/quote-tool/flask_app.py` |
 
-Scripted DB init/seed and backups
+Refer to each app's README for setup, testing, and deployment details:
 
-Architecture (logical)
-[Users/Staff]───HTTPS──►[Ingress (SWAG/Traefik)]──►[apps:web,admin,api]
-                                            │
-                                            └──►[Static/Media]
-[Jobs/Workers]──►[Redis]* ──► [apps:worker]
-[All apps] ──► [Postgres]
+- [`apps/expenses/README.md`](apps/expenses/README.md)
+- [`apps/hana-inventory/APP_README.md`](apps/hana-inventory/APP_README.md)
+- [`apps/quote-tool/README.md`](apps/quote-tool/README.md)
 
-*optional
+## Suggested next steps
 
-Repo structure (simplified)
+1. Create `infra/` and `packages/` directories as shared components emerge (see `agents.md`).
+2. Standardize Docker Compose workflows that build and run the apps together.
+3. Add CI jobs that lint and test each application whenever the corresponding subtree changes.
 
-apps/ – services (web/api/admin/worker)
+## Contributing
 
-packages/ – shared libraries
-
-infra/docker/ – Dockerfiles
-
-infra/compose/ – compose files and overlays
-
-infra/ingress/ – proxy configs (SWAG/Traefik/NPM)
-
-scripts/ – init, migrations, imports, maintenance
-
-Requirements
-
-Docker Engine 24+
-
-Docker Compose v2+
-
-Optional: VS Code Dev Containers
-
-Quick start (dev)
-
-Copy .env.example → .env and fill required values.
-
-Build & run:
-
-docker compose -f infra/compose/compose.dev.yml up --build
-
-App web UI at http://localhost:5000 (adjust port per service).
-
-First-time DB setup
-docker compose exec app python scripts/init_db.py --data-dir ./data
-Environment variables
-
-Create .env in repo root. Example keys:
-
-Key	Description	Example
-POSTGRES_PASSWORD	DB password	change-me
-POSTGRES_DB	Database name	appdb
-POSTGRES_USER	DB user	appuser
-DATABASE_URL	SQLAlchemy/driver URL	postgresql+psycopg2://appuser:...
-GOOGLE_MAPS_API_KEY	External API key (if used)	...
-COMPOSE_PROFILES	Enable optional services	cache,backup,ingress
-
-Add service-specific keys under each app’s README (or below).
-
-Running with ingress (public routes)
-
-Pick one provider and use the matching compose overlay:
-
-SWAG: TLS via Let’s Encrypt, Nginx-based. Put vhost files in infra/ingress/swag/.
-
-Traefik: Dynamic labels on services; ACME configured in infra/ingress/traefik/.
-
-NGINX Proxy Manager: Point-and-click; not recommended for IaC.
-
-Example:
-
-docker compose \
-  -f infra/compose/compose.dev.yml \
-  -f infra/compose/compose.ingress.yml \
-  --profile ingress up -d
-Backups
-
-Enable the backup profile to run Duplicati targeting DB volumes.
-
-Test restores into a scratch DB monthly.
-
-Development
-
-Pre-commit hooks: pre-commit install.
-
-Lint/test:
-
-make check   # or: ruff/black/pytest
-
-Dev container (VS Code): open folder, “Reopen in Container”.
-
-Testing
-
-Unit tests in each app under tests/.
-
-Compose service test runs suite in CI:
-
-docker compose run --rm test
-Deployment (internal server)
-
-Pull repository on the server.
-
-Provide .env and TLS/ingress config.
-
-docker compose -f infra/compose/compose.prod.yml up -d
-
-Verify health endpoints: /healthz, /readyz.
-
-Troubleshooting
-
-Container restarts: docker compose logs -f <service>
-
-DB connectivity: ensure POSTGRES_HOST is reachable (override to localhost when running helper scripts outside Docker).
-
-Stuck migrations: run migration head and inspect Alembic table.
-
-Roadmap
-
-Office 365 SSO (OIDC) for all public/admin routes
-
-Centralized metrics and log aggregation
-
-Blue/green or canary releases via labels
-
-License
-
-Internal use only (FSI).
+Follow the branching, commit, and PR guidance in `agents.md`. When changing any application, update its documentation alongside
+code changes and run the relevant test suites before committing.
