@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import os
 import sys
 from typing import Any
 
@@ -10,25 +11,37 @@ from flask import Flask, current_app, g
 
 
 def _add_repo_root_to_path() -> None:
-    """Ensure the monorepo root is on ``sys.path`` when running in Docker.
+    """Ensure shared ``packages`` directory is importable at runtime.
 
-    The expenses service imports shared utilities from ``packages/``. When the
-    application is installed as a wheel inside the container the package lives
-    under ``/app/fsi_expenses_web`` which is only two levels deep, so the
-    previous ``parents[3]`` lookup raised :class:`IndexError`. This helper walks
-    upward from the current module until it finds a directory containing the
-    ``packages`` folder and appends that path to ``sys.path`` if it is missing.
-
-    External dependencies:
-        * Relies on :mod:`pathlib` to traverse parent directories.
-        * Mutates :data:`sys.path` so imports such as ``packages.fsi_common``
-          continue to work inside the Docker runtime.
+    When the service is installed into a container the application itself is
+    imported from ``site-packages``. In that case the monorepo root (which holds
+    the ``packages`` directory) is not automatically included on
+    :data:`sys.path`. We therefore check a set of likely root locations and
+    prepend the first directory that actually contains ``packages``.
     """
 
     root_marker = "packages"
     current = Path(__file__).resolve()
-    for candidate in (current.parent, *current.parents):
-        if (candidate / root_marker).exists():
+
+    candidate_roots: list[Path] = []
+
+    env_root = os.getenv("FSI_MONOREPO_ROOT")
+    if env_root:
+        try:
+            candidate_roots.append(Path(env_root).resolve())
+        except OSError:
+            pass
+
+    candidate_roots.append(Path("/app"))
+    candidate_roots.extend((current.parent, *current.parents))
+
+    seen: set[Path] = set()
+    for candidate in candidate_roots:
+        if candidate in seen:
+            continue
+        seen.add(candidate)
+        packages_dir = candidate / root_marker
+        if packages_dir.exists():
             root = str(candidate)
             if root not in sys.path:
                 sys.path.insert(0, root)
