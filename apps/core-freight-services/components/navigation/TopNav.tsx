@@ -23,9 +23,10 @@ export const TopNav = ({ links }: TopNavProps) => {
         return (
           <Link
             key={link.href}
-            className={`rounded-full px-4 py-2 transition-colors ${
+            className={clsx(
+              'rounded-full px-4 py-2 transition-colors',
               isActive ? 'bg-primary text-white' : 'text-primary/80 hover:bg-primary/10'
-            }`}
+            )}
             href={link.href}
           >
             {link.label}
