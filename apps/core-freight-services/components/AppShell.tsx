@@ -27,7 +27,7 @@ const TopNav = () => {
   return (
     <nav aria-label="Primary" className="flex items-center gap-2 text-sm font-medium">
       {navLinks.map((link) => {
-        const isActive = pathname === link.href;
+        const isActive = link.href === '/' ? pathname === link.href : pathname.startsWith(link.href);
 
         return (
           <Link
