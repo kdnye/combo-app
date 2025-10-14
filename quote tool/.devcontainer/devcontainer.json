@@ -1,0 +1,9 @@
+{
+  "name": "quote_tool",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "forwardPorts": [8000],
+  "remoteUser": "root"
+}
