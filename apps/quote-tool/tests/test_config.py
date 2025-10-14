@@ -4,7 +4,12 @@ from __future__ import annotations
 
 import os
 
-from config import _resolve_mail_allowed_sender_domain, _resolve_ratelimit_storage_uri, _resolve_secret_key
+from config import (
+    _resolve_mail_allowed_sender_domain,
+    _resolve_ratelimit_storage_uri,
+    _resolve_secret_key,
+    build_postgres_database_uri_from_env,
+)
 
 
 def test_resolve_secret_key_prefers_env(monkeypatch):
@@ -53,4 +58,29 @@ def test_resolve_ratelimit_storage_uri_defaults_to_memory(monkeypatch):
     monkeypatch.delenv("RATELIMIT_STORAGE_URI", raising=False)
     monkeypatch.delenv("COMPOSE_PROFILES", raising=False)
     assert _resolve_ratelimit_storage_uri() == "memory://"
+
+
+def test_build_postgres_database_uri_from_env_uses_compose_defaults(monkeypatch):
+    """The Postgres helper should assemble a URI using Compose defaults."""
+
+    monkeypatch.setenv("POSTGRES_PASSWORD", "pa@ss")
+    monkeypatch.delenv("POSTGRES_USER", raising=False)
+    monkeypatch.delenv("POSTGRES_DB", raising=False)
+    monkeypatch.delenv("POSTGRES_HOST", raising=False)
+    monkeypatch.delenv("POSTGRES_PORT", raising=False)
+    monkeypatch.delenv("POSTGRES_OPTIONS", raising=False)
+
+    uri = build_postgres_database_uri_from_env()
+
+    assert uri == "postgresql+psycopg2://quote_tool:pa%40ss@postgres:5432/quote_tool"
+
+
+def test_build_postgres_database_uri_from_env_returns_none_without_password(monkeypatch):
+    """The helper should return ``None`` when the password is missing."""
+
+    monkeypatch.delenv("POSTGRES_PASSWORD", raising=False)
+    monkeypatch.delenv("POSTGRES_USER", raising=False)
+    monkeypatch.delenv("POSTGRES_DB", raising=False)
+
+    assert build_postgres_database_uri_from_env() is None
 

@@ -9,7 +9,7 @@ services:
       - PGID=${PGID:-1000}
       - TZ=${TZ:-UTC}
       - POSTGRES_USER=${POSTGRES_USER:-quote_tool}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-quote_tool}
       - POSTGRES_DB=${POSTGRES_DB:-quote_tool}
     volumes:
       - ./data/postgres:/config
@@ -52,7 +52,7 @@ services:
       - PUID=${PUID:-1000}
       - PGID=${PGID:-1000}
       - TZ=${TZ:-UTC}
-      - DUPLICATI__WEBSERVICE__PASSWORD=${DUPLICATI_WEBSERVICE_PASSWORD}
+      - DUPLICATI__WEBSERVICE__PASSWORD=${DUPLICATI_WEBSERVICE_PASSWORD:-devchangeme}
       - DUPLICATI__WEBSERVICE__LISTENURI=http://0.0.0.0:8200/
     volumes:
       - ./data/duplicati:/config
@@ -93,19 +93,20 @@ services:
       - .:/app  # Mount source and database files
     environment:
       - FLASK_DEBUG=1
-      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY:-}
       - POSTGRES_USER=${POSTGRES_USER:-quote_tool}
       - POSTGRES_DB=${POSTGRES_DB:-quote_tool}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - DATABASE_URL=${DATABASE_URL:-postgresql+psycopg2://${POSTGRES_USER:-quote_tool}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-quote_tool}}
-      - BIGQUERY_PROJECT=${BIGQUERY_PROJECT}
-      - BIGQUERY_DATASET=${BIGQUERY_DATASET}
-      - BIGQUERY_LOCATION=${BIGQUERY_LOCATION}
-      - DB_POOL_SIZE=${DB_POOL_SIZE}
-      - CACHE_TYPE=${CACHE_TYPE}
-      - CACHE_REDIS_URL=${CACHE_REDIS_URL}
-      - RATELIMIT_STORAGE_URI=${RATELIMIT_STORAGE_URI}
-      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-quote_tool}
+      - DATABASE_URL=${DATABASE_URL:-}
+      - SQLALCHEMY_DATABASE_URI=${SQLALCHEMY_DATABASE_URI:-}
+      - BIGQUERY_PROJECT=${BIGQUERY_PROJECT:-}
+      - BIGQUERY_DATASET=${BIGQUERY_DATASET:-}
+      - BIGQUERY_LOCATION=${BIGQUERY_LOCATION:-}
+      - DB_POOL_SIZE=${DB_POOL_SIZE:-}
+      - CACHE_TYPE=${CACHE_TYPE:-}
+      - CACHE_REDIS_URL=${CACHE_REDIS_URL:-}
+      - RATELIMIT_STORAGE_URI=${RATELIMIT_STORAGE_URI:-}
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS:-}
       - COMPOSE_PROFILES=${COMPOSE_PROFILES:-}
     networks:
       - default
@@ -121,10 +122,10 @@ services:
       - PUID=${PUID:-1000}
       - PGID=${PGID:-1000}
       - TZ=${TZ:-UTC}
-      - URL=${URL}
-      - SUBDOMAINS=${SUBDOMAINS}
-      - VALIDATION=${VALIDATION}
-      - EMAIL=${EMAIL}
+      - URL=${URL:-}
+      - SUBDOMAINS=${SUBDOMAINS:-}
+      - VALIDATION=${VALIDATION:-}
+      - EMAIL=${EMAIL:-}
     volumes:
       - ./deploy/swag:/config
     ports:
