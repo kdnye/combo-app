@@ -3,7 +3,13 @@
 from __future__ import annotations
 
 from pathlib import Path
+import sys
+
 import pytest
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.append(str(PROJECT_ROOT))
 
 from fsi_expenses_web import AppConfig, create_app
 
