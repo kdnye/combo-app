@@ -275,6 +275,42 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY", "")
+    WORKSPACE_APPS = [
+        {
+            "slug": "quote-tool",
+            "name": "Hotshot Quote Workspace",
+            "description": (
+                "Create, revise, and email time-sensitive hotshot quotes with "
+                "built-in compliance and margin checks."
+            ),
+            "endpoint": "quotes.new_quote",
+            "primary": True,
+            "cta_label": "Open quote builder",
+        },
+        {
+            "slug": "hana-inventory",
+            "name": "Hana Table Inventory",
+            "description": (
+                "Monitor Hana operating table kits across the network and "
+                "triage weekly audit exceptions."
+            ),
+            "url": os.getenv(
+                "HANA_INVENTORY_URL",
+                "http://localhost:8000/hana-inventory",
+            ),
+            "external": True,
+        },
+        {
+            "slug": "expenses",
+            "name": "Expenses",
+            "description": (
+                "Assemble reimbursable expense reports, attach receipts, and "
+                "submit them for approval."
+            ),
+            "url": os.getenv("EXPENSES_APP_URL", "http://localhost:8080/"),
+            "external": True,
+        },
+    ]
     DB_POOL_SIZE = os.getenv("DB_POOL_SIZE")
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
     if DB_POOL_SIZE:

@@ -225,6 +225,7 @@ def create_app(config_class: Union[str, type] = "config.Config") -> Flask:
     from .admin import admin_bp
     from .help import help_bp
     from .quotes import quotes_bp
+    from .workspace import workspace_bp
     from quote.admin_view import admin_quotes_bp
 
     app.register_blueprint(auth_bp)
@@ -232,10 +233,20 @@ def create_app(config_class: Union[str, type] = "config.Config") -> Flask:
     app.register_blueprint(admin_quotes_bp, url_prefix="/admin")
     app.register_blueprint(quotes_bp, url_prefix="/quotes")
     app.register_blueprint(help_bp, url_prefix="/help")
+    app.register_blueprint(workspace_bp)
 
     @app.route("/", methods=["GET"])
-    def index() -> str:
-        """Display a landing page explaining login requirements."""
+    def index() -> ResponseReturnValue:
+        """Display the login prompt or redirect to the workspace landing page.
+
+        Returns:
+            ResponseReturnValue: Either a redirect to
+            :func:`workspace.home` for authenticated users or the rendered
+            ``index.html`` template describing how to access the quote tool.
+        """
+
+        if current_user.is_authenticated:
+            return redirect(url_for("workspace.home"))
         return render_template("index.html")
 
     @app.route("/map", methods=["POST"])
