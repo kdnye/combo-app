@@ -36,6 +36,23 @@ Refer to each app's README for setup, testing, and deployment details:
 - [`apps/hana-inventory/APP_README.md`](apps/hana-inventory/APP_README.md)
 - [`apps/quote-tool/README.md`](apps/quote-tool/README.md)
 
+## Container image for unified landing page
+
+Deployments that target the repository root can now build a single container
+image using the top-level `Dockerfile`. The resulting image runs the Hana
+inventory Flask application, which also serves the combined landing page that
+links to the Expenses and Hotshot Quote Tool services. Configure the link
+destinations at runtime with the following environment variables:
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `EXPENSES_APP_URL` | `http://localhost:8080/` | Location of the Expenses UI |
+| `QUOTE_TOOL_APP_URL` | `http://localhost:5000/` | Location of the Hotshot Quote Tool |
+
+Set `PORT` (defaults to `8000`) if your hosting platform requires binding to a
+specific port. The container uses Gunicorn as the process manager and stores its
+SQLite database inside the writable application directory.
+
 ## Developer tooling
 
 - **Docker Compose:** `docker compose -f infra/compose/dev.yml up --build` launches the expenses UI, quote tool API, supporting Postgres instance, and the Hana inventory dashboard together. Each service binds to a unique port so you can exercise cross-app workflows locally.
