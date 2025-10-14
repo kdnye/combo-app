@@ -1,10 +1,6 @@
 export type AppConfig = {
   quoteToolUrl: string;
   expenseToolUrl: string;
-  hanaToolUrl: string;
-  features: {
-    hana: boolean;
-  };
   preferences: {
     openLinksInNewTab: boolean;
   };
@@ -28,14 +24,19 @@ const readBoolean = (env: NodeJS.ProcessEnv, key: string, fallback = false): boo
   return truthyValues.includes(value.toLowerCase());
 };
 
+/**
+ * Build the launcher configuration from environment variables.
+ *
+ * @param env Process environment providing configuration overrides. Defaults to
+ *            `process.env` so the Next.js runtime can supply values without
+ *            calling code explicitly.
+ * @returns Structured {@link AppConfig} that downstream components can
+ *          consume without re-parsing environment variables.
+ */
 export const createAppConfig = (env: NodeJS.ProcessEnv = process.env): AppConfig => ({
   quoteToolUrl: readEnv(env, 'NEXT_PUBLIC_QUOTE_TOOL_URL') ?? 'https://quote.freightservices.net',
   expenseToolUrl:
     readEnv(env, 'NEXT_PUBLIC_EXPENSE_TOOL_URL') ?? 'https://expenses.freightservices.net',
-  hanaToolUrl: readEnv(env, 'NEXT_PUBLIC_HANA_TOOL_URL') ?? 'https://mizuho.freightservices.net',
-  features: {
-    hana: readBoolean(env, 'NEXT_PUBLIC_FEATURE_HANA', false)
-  },
   preferences: {
     openLinksInNewTab: readBoolean(env, 'NEXT_PUBLIC_OPEN_LINKS_NEW_TAB', false)
   },

@@ -8,7 +8,6 @@ s monorepo is to make it easy to operate every app together while preserving the
 ```text
 apps/
   expenses/        # Python/Flask expense report builder
-  hana-inventory/  # Hana operating table inventory checker
   quote-tool/      # Hotshot freight quote management portal
 infra/             # Shared Docker Compose bundles and ops assets
 packages/          # Reusable Python packages
@@ -23,18 +22,15 @@ Each application keeps its own Dockerfiles, documentation, and tests. When new s
 | App | Description | Primary entry point |
 | --- | ----------- | ------------------- |
 | Expenses | Flask UI for assembling reimbursable expense reports and uploading receipts. | `apps/expenses/fsi_expenses_web/__init__.py` |
-| Hana Inventory | Google Apps Script that audits the "Mizuho Inventory" Google Sheet and emails weekly alerts when counts drift. | `apps/hana-inventory/app` |
 | Hotshot Quote Tool | Flask application with Alembic migrations and utilities for calculating freight quotes. | `apps/quote-tool/flask_app.py` |
 
 Authenticated quote tool users land on `/workspace`, a dedicated operations hub
 that highlights the quoting workflow and exposes quick links to the supporting
-applications. The Hana inventory dashboard remains available at
-`/hana-inventory` for legacy bookmarks.
+expense reporting application.
 
 Refer to each app's README for setup, testing, and deployment details:
 
 - [`apps/expenses/README.md`](apps/expenses/README.md)
-- [`apps/hana-inventory/APP_README.md`](apps/hana-inventory/APP_README.md)
 - [`apps/quote-tool/README.md`](apps/quote-tool/README.md)
 
 ## Container image for unified landing page
@@ -47,7 +43,6 @@ following environment variables:
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `HANA_INVENTORY_URL` | `http://localhost:8000/hana-inventory` | Location of the Hana dashboard |
 | `EXPENSES_APP_URL` | `http://localhost:8080/` | Location of the Expenses UI |
 
 Set `PORT` (defaults to `8000`) if your hosting platform requires binding to a
@@ -56,7 +51,7 @@ SQLite database inside the writable application directory.
 
 ## Developer tooling
 
-- **Docker Compose:** `docker compose -f infra/compose/dev.yml up --build` launches the expenses UI, quote tool API, supporting Postgres instance, and the Hana inventory dashboard together. Each service binds to a unique port so you can exercise cross-app workflows locally.
+- **Docker Compose:** `docker compose -f infra/compose/dev.yml up --build` launches the expenses UI, quote tool API, and supporting Postgres instance together. Each service binds to a unique port so you can exercise cross-app workflows locally.
 - **Continuous Integration:** GitHub Actions workflows lint and test each application when their subtrees change. See `.github/workflows/` for details on the Python version and commands executed per app.
 - **Shared code:** Place reusable Python modules in `packages/` and import them from applications as needed.
 

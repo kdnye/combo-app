@@ -109,10 +109,11 @@ def test_workspace_home_renders_configured_apps():
             "cta_label": "Start quoting",
         },
         {
-            "slug": "hana",
-            "name": "Hana Inventory",
-            "description": "Track tables",
-            "url": "https://inventory.example.com",
+            "slug": "expenses",
+            "name": "Expense Reports",
+            "description": "Submit receipts",
+            "url": "https://expenses.example.com",
+            "cta_label": "Open expenses",
             "external": True,
         },
     ]
@@ -123,5 +124,5 @@ def test_workspace_home_renders_configured_apps():
     html = response.get_data(as_text=True)
     assert "Quote Tool" in html
     assert "Start quoting" in html
-    assert "Hana Inventory" in html
-    assert "https://inventory.example.com" in html
+    assert "Expense Reports" in html
+    assert "https://expenses.example.com" in html

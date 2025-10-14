@@ -16,8 +16,6 @@ Copy `.env.example` to `.env.local` and adjust as needed:
 
 - `NEXT_PUBLIC_QUOTE_TOOL_URL`
 - `NEXT_PUBLIC_EXPENSE_TOOL_URL`
-- `NEXT_PUBLIC_HANA_TOOL_URL`
-- `NEXT_PUBLIC_FEATURE_HANA`
 - `NEXT_PUBLIC_OPEN_LINKS_NEW_TAB`
 - `AUTH_ENABLED`
 - `AZURE_AD_TENANT_ID`
@@ -35,7 +33,6 @@ Copy `.env.example` to `.env.local` and adjust as needed:
 
 ## Feature Flags
 
-- `NEXT_PUBLIC_FEATURE_HANA` hides the Hana Table Inventory card when `false`.
 - `NEXT_PUBLIC_OPEN_LINKS_NEW_TAB` sets the default behavior for tool links.
 
 ## TODOs
