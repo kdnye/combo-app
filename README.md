@@ -7,9 +7,11 @@ s monorepo is to make it easy to operate every app together while preserving the
 
 ```text
 apps/
-  expenses/        # Expense Report Builder SPA
-  hana-inventory/  # Hana operating table inventory checker (Apps Script)
+  expenses/        # Python/Flask expense report builder
+  hana-inventory/  # Hana operating table inventory checker
   quote-tool/      # Hotshot freight quote management portal
+infra/             # Shared Docker Compose bundles and ops assets
+packages/          # Reusable Python packages
 agents.md          # Governance and workflow guidance for the monorepo
 ```
 
@@ -20,7 +22,7 @@ Each application keeps its own Dockerfiles, documentation, and tests. When new s
 
 | App | Description | Primary entry point |
 | --- | ----------- | ------------------- |
-| Expenses | Offline-capable web client for assembling reimbursable expense reports and uploading receipts. | `apps/expenses/index.html` (served statically) |
+| Expenses | Flask UI for assembling reimbursable expense reports and uploading receipts. | `apps/expenses/fsi_expenses_web/__init__.py` |
 | Hana Inventory | Google Apps Script that audits the "Mizuho Inventory" Google Sheet and emails weekly alerts when counts drift. | `apps/hana-inventory/app` |
 | Hotshot Quote Tool | Flask application with Alembic migrations and utilities for calculating freight quotes. | `apps/quote-tool/flask_app.py` |
 
@@ -30,11 +32,11 @@ Refer to each app's README for setup, testing, and deployment details:
 - [`apps/hana-inventory/APP_README.md`](apps/hana-inventory/APP_README.md)
 - [`apps/quote-tool/README.md`](apps/quote-tool/README.md)
 
-## Suggested next steps
+## Developer tooling
 
-1. Create `infra/` and `packages/` directories as shared components emerge (see `agents.md`).
-2. Standardize Docker Compose workflows that build and run the apps together.
-3. Add CI jobs that lint and test each application whenever the corresponding subtree changes.
+- **Docker Compose:** `docker compose -f infra/compose/dev.yml up --build` launches the expenses UI, quote tool API, supporting Postgres instance, and the Hana inventory dashboard together. Each service binds to a unique port so you can exercise cross-app workflows locally.
+- **Continuous Integration:** GitHub Actions workflows lint and test each application when their subtrees change. See `.github/workflows/` for details on the Python version and commands executed per app.
+- **Shared code:** Place reusable Python modules in `packages/` and import them from applications as needed.
 
 ## Contributing
 
