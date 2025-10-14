@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Expense reports · FSI Expenses{% endblock %}
+{% block content %}
+  <section>
+    <h2>Expense reports</h2>
+    {% if reports %}
+      <ul class="report-list">
+        {% for report in reports %}
+          <li class="report-card">
+            <h3><a href="{{ url_for('reports.view_report', report_id=report.id) }}">{{ report.title }}</a></h3>
+            <p><strong>Traveler:</strong> {{ report.traveler_name }} — {{ report.department }}</p>
+            <p><strong>Travel dates:</strong> {{ report.trip_start }} to {{ report.trip_end }}</p>
+            <div class="report-actions">
+              <a class="button-link" href="{{ url_for('reports.view_report', report_id=report.id) }}">View</a>
+              <a class="button-link" href="{{ url_for('reports.preview_report', report_id=report.id) }}">Preview</a>
+              <a class="button-link" href="{{ url_for('reports.export_report_json', report_id=report.id) }}">Download JSON</a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No reports yet. <a href="{{ url_for('reports.new_report_form') }}">Create the first report</a>.</p>
+    {% endif %}
+  </section>
+{% endblock %}

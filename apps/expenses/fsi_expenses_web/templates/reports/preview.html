@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Preview · {{ report.title }}{% endblock %}
+{% block content %}
+  <section>
+    <h2>Copy-ready preview</h2>
+    <p>Use the text below when submitting the official expense reimbursement form.</p>
+    <textarea readonly class="preview-text">{{ preview_text }}</textarea>
+    <div class="report-actions">
+      <a class="button-link" href="{{ url_for('reports.view_report', report_id=report.id) }}">Back to report</a>
+      <a class="button-link" href="{{ url_for('reports.export_report_json', report_id=report.id) }}">Download JSON</a>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,43 @@
+name: Hana Inventory CI
+
+on:
+  push:
+    paths:
+      - 'apps/hana-inventory/**'
+      - 'packages/**'
+      - '.github/workflows/hana-inventory.yml'
+  pull_request:
+    paths:
+      - 'apps/hana-inventory/**'
+      - 'packages/**'
+      - '.github/workflows/hana-inventory.yml'
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/hana-inventory
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install black ruff
+
+      - name: Run Ruff
+        run: ruff check app tests
+
+      - name: Run Black
+        run: black --check app tests
+
+      - name: Run tests
+        run: pytest
