@@ -4,10 +4,14 @@ import { appConfig } from '@/config';
 
 const pageCopy = {
   quote: 'Create and manage customer freight quotes across modes.',
-  expenses: 'Submit and track business expenses for approval.',
-  hana: 'Manage orthopedic Hana table inventory and status.'
+  expenses: 'Submit and track business expenses for approval.'
 };
 
+/**
+ * Provide metadata for the launcher cards surfaced on the home page.
+ *
+ * @returns Promise that resolves to the static set of quote and expense tools.
+ */
 const getToolCards = async (): Promise<ToolCardProps[]> => {
   const cards: ToolCardProps[] = [
     {
@@ -23,17 +27,6 @@ const getToolCards = async (): Promise<ToolCardProps[]> => {
       icon: FileSpreadsheet
     }
   ];
-
-  if (appConfig.features.hana) {
-    const { Boxes } = await import('lucide-react');
-    cards.push({
-      title: 'Hana Table Inventory',
-      description: pageCopy.hana,
-      href: appConfig.hanaToolUrl,
-      icon: Boxes,
-      beta: true
-    });
-  }
 
   return cards;
 };

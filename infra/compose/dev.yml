@@ -42,17 +42,5 @@ services:
     volumes:
       - ../../apps/quote-tool:/app
 
-  hana-inventory:
-    build:
-      context: ../../apps/hana-inventory
-    command: flask run --host=0.0.0.0 --port=8000
-    environment:
-      FLASK_APP: app:create_app
-      FLASK_ENV: development
-    ports:
-      - "8001:8000"
-    volumes:
-      - ../../apps/hana-inventory:/app
-
 volumes:
   quote-data:

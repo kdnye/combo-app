@@ -288,27 +288,15 @@ class Config:
             "cta_label": "Open quote builder",
         },
         {
-            "slug": "hana-inventory",
-            "name": "Hana Table Inventory",
-            "description": (
-                "Monitor Hana operating table kits across the network and "
-                "triage weekly audit exceptions."
-            ),
-            "url": os.getenv(
-                "HANA_INVENTORY_URL",
-                "http://localhost:8000/hana-inventory",
-            ),
-            "external": True,
-        },
-        {
             "slug": "expenses",
-            "name": "Expenses",
+            "name": "Expense Reports",
             "description": (
-                "Assemble reimbursable expense reports, attach receipts, and "
-                "submit them for approval."
+                "Prepare reimbursable expense reports, attach receipts, and "
+                "route them for approval."
             ),
             "url": os.getenv("EXPENSES_APP_URL", "http://localhost:8080/"),
             "external": True,
+            "cta_label": "Launch expenses portal",
         },
     ]
     DB_POOL_SIZE = os.getenv("DB_POOL_SIZE")
