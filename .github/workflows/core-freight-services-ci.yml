@@ -1,0 +1,28 @@
++25
+-0
+
+name: Core Freight Services CI
+
+on:
+  pull_request:
+    paths:
+      - 'apps/core-freight-services/**'
+      - '.github/workflows/core-freight-services-ci.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/core-freight-services
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: apps/core-freight-services/package.json
+      - run: npm install
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test
