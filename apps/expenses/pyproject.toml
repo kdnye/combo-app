@@ -25,7 +25,10 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["fsi_expenses_web"]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+include = ["fsi_expenses_web*", "packages*"]
 
 [tool.setuptools.package-data]
 fsi_expenses_web = ["templates/**/*.html", "static/**/*"]

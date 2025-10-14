@@ -1,7 +1,6 @@
 .git
 .github
 infra/
-packages/
 apps/expenses/node_modules/
 __pycache__/
 *.pyc
