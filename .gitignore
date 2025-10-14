@@ -1,0 +1,30 @@
+
+# Node
+node_modules/
+.npm/
+.next/
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor
+.idea/
+.vscode/
+.DS_Store
+
+# Coverage
+coverage/
+
+# Build outputs
+out/
+dist/
+tsconfig.tsbuildinfo
+
+# Python caches
+__pycache__/
+*.pyc
