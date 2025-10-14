@@ -19,7 +19,9 @@ flask --app wsgi run
 
 The first run creates `inventory.db` at the repository root and seeds it with the baseline counts from the Google Sheet snapshot. Subsequent runs reuse the existing database.
 
-Open http://127.0.0.1:5000/ to view the dashboard.
+Open http://127.0.0.1:5000/ to view the new home page that links to every
+Freight Services tool bundled in this repository. Select **Hana Table
+Inventory** to reach the dashboard at `/hana-inventory`.
 
 ## Next steps
 

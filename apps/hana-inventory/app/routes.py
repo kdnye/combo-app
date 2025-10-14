@@ -3,9 +3,10 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, Iterable, List
 
 from flask import Blueprint, current_app, render_template, url_for
+from werkzeug.routing import BuildError
 from sqlalchemy.orm import joinedload
 
 from .models import Item, Location, LocationItem
@@ -36,6 +37,17 @@ class LocationView:
     location: Location
     issue_count: int
     items: List[LocationRow]
+
+
+@dataclass
+class AppLink:
+    """Metadata describing an application that should be shown on the home page."""
+
+    slug: str
+    name: str
+    description: str
+    url: str
+    external: bool
 
 
 def _format_quantity(value: float | None) -> str:
@@ -76,8 +88,92 @@ def _item_image_url_cache(items: List[Item]) -> Dict[int, str | None]:
     return cache
 
 
+def _load_app_links(raw_links: Iterable[dict]) -> List[AppLink]:
+    """Convert configuration dictionaries into :class:`AppLink` objects.
+
+    Parameters
+    ----------
+    raw_links:
+        Iterable of dictionaries loaded from :data:`flask.current_app.config`
+        describing each application. Expected keys are ``slug``, ``name``,
+        ``description``, and either ``url`` or ``endpoint``. Optional keys
+        include ``external`` to flag whether the link should open in a new tab.
+
+    Returns
+    -------
+    List[AppLink]
+        Normalized collection of app metadata that the template can iterate
+        over. Invalid entries are skipped after emitting a warning via the
+        Flask application logger.
+    """
+
+    app_links: List[AppLink] = []
+    for link in raw_links:
+        slug = link.get('slug')
+        name = link.get('name')
+        description = link.get('description')
+        endpoint = link.get('endpoint')
+        url = link.get('url')
+        external = link.get('external', True)
+
+        if endpoint:
+            try:
+                url = url_for(str(endpoint))
+                external = False
+            except BuildError:
+                current_app.logger.warning(
+                    'Skipping app directory entry because endpoint %s cannot be built.',
+                    endpoint,
+                )
+                continue
+
+        if not all([slug, name, description, url]):
+            current_app.logger.warning(
+                'Skipping app directory entry because it is missing required fields: %s',
+                link,
+            )
+            continue
+
+        app_links.append(
+            AppLink(
+                slug=str(slug),
+                name=str(name),
+                description=str(description),
+                url=str(url),
+                external=bool(external),
+            )
+        )
+    return app_links
+
+
 @bp.route('/')
-def dashboard() -> str:
+def home() -> str:
+    """Render the unified landing page for all Freight Services applications.
+
+    Returns
+    -------
+    str
+        HTML for the home view listing each tool configured in
+        :data:`flask.current_app.config`.
+    """
+
+    raw_links = current_app.config.get('APP_DIRECTORY', [])
+    apps = _load_app_links(raw_links)
+    return render_template('home.html', apps=apps)
+
+
+@bp.route('/hana-inventory')
+@bp.route('/hana-inventory/')
+def inventory_dashboard() -> str:
+    """Render the Hana Table Inventory dashboard.
+
+    Returns
+    -------
+    str
+        HTML representing the existing inventory dashboard, including
+        aggregated network totals and per-location snapshots.
+    """
+
     items = (
         Item.query.order_by(Item.display_order)
         .options(joinedload(Item.locations))
