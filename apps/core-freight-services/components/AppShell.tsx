@@ -1,6 +1,3 @@
-+88
--0
-
 'use client';
 
 import Link from 'next/link';

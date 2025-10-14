@@ -3,7 +3,8 @@ name: combo-app
 services:
   expenses-web:
     build:
-      context: ./apps/expenses
+      context: .
+      dockerfile: ./apps/expenses/Dockerfile
     environment:
       EXPENSES_DATABASE: sqlite:////app/instance/expenses.db
       EXPENSES_UPLOADS: /app/instance/uploads
