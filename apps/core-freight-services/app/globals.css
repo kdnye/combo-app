@@ -4,11 +4,17 @@
 
 :root {
   --fsi-primary: #0f172a;
+  --fsi-primary-rgb: 15 23 42;
   --fsi-secondary: #1d4ed8;
+  --fsi-secondary-rgb: 29 78 216;
   --fsi-accent: #10b981;
+  --fsi-accent-rgb: 16 185 129;
   --fsi-bg: #f8fafc;
+  --fsi-bg-rgb: 248 250 252;
   --fsi-fg: #0f172a;
+  --fsi-fg-rgb: 15 23 42;
   --fsi-muted: #94a3b8;
+  --fsi-muted-rgb: 148 163 184;
   --fsi-font-sans: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif;
   --fsi-font-mono: 'JetBrains Mono', 'SFMono-Regular', ui-monospace, monospace;
 }

@@ -4,14 +4,17 @@ FROM python:3.11-slim AS builder
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 WORKDIR /app
-COPY pyproject.toml README.md ./
-COPY fsi_expenses_web ./fsi_expenses_web
+COPY apps/expenses/pyproject.toml ./pyproject.toml
+COPY apps/expenses/README.md ./README.md
+COPY apps/expenses/fsi_expenses_web ./fsi_expenses_web
+COPY packages ./packages
 RUN pip install --upgrade pip \
     && pip install .
 
 FROM python:3.11-slim AS runtime
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app:${PYTHONPATH} \
     FLASK_APP=fsi_expenses_web:create_app
 WORKDIR /app
 COPY --from=builder /usr/local /usr/local
