@@ -1,0 +1,28 @@
+# Use official Windows image with Python
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
+
+# Install Python
+RUN powershell -Command \
+    Invoke-WebRequest -Uri https://www.python.org/ftp/python/3.11.5/python-3.11.5-amd64.exe -OutFile python.exe ; \
+    Start-Process python.exe -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1' -Wait ; \
+    Remove-Item python.exe
+
+# Add your app code
+COPY . /app
+WORKDIR /app
+
+# Install runtime dependencies, build the Windows executable, and clean up
+# build-time tools to keep the final image lean.
+RUN python scripts/install_dependencies.py --requirements requirements.txt && \
+    pip install pyinstaller && \
+    powershell -Command "Remove-Item -Force windows_setup.spec, run_app.spec -ErrorAction SilentlyContinue" && \
+    pyinstaller --noconfirm --onefile --name windows_setup --add-data ".env.example;." --add-data "Hotshot_Rates.csv;rates" --add-data "beyond_price.csv;rates" --add-data "accessorial_cost.csv;rates" --add-data "Zipcode_Zones.csv;rates" --add-data "cost_zone_table.csv;rates" --add-data "air_cost_zone.csv;rates" windows_setup.py && \
+    powershell -Command "Copy-Item -Path 'dist\\windows_setup.exe' -Destination 'dist\\run_app.exe' -Force" && \
+    pip uninstall --yes pyinstaller && \
+    pip cache purge && \
+    powershell -Command "Remove-Item -Recurse -Force build -ErrorAction SilentlyContinue; \
+        Get-ChildItem -Path . -Filter '__pycache__' -Directory -Recurse | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue; \
+        Get-ChildItem -Path . -Filter '*.spec' -File -Recurse | Remove-Item -Force -ErrorAction SilentlyContinue"
+
+# Output the .exe
+CMD powershell -Command "Get-ChildItem dist\\windows_setup.exe"

@@ -1,0 +1,139 @@
+
+
+services:
+  postgres:
+    image: lscr.io/linuxserver/postgres:latest
+    container_name: quote_tool_postgres
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-UTC}
+      - POSTGRES_USER=${POSTGRES_USER:-quote_tool}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB:-quote_tool}
+    volumes:
+      - ./data/postgres:/config
+    expose:
+      - "5432"
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-quote_tool} -d ${POSTGRES_DB:-quote_tool} -h localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  redis:
+    image: lscr.io/linuxserver/redis:latest
+    container_name: quote_tool_redis
+    profiles:
+      - cache
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-UTC}
+    volumes:
+      - ./data/redis:/data
+    networks:
+      - internal
+    restart: unless-stopped
+
+  duplicati:
+    image: lscr.io/linuxserver/duplicati:latest
+    container_name: quote_tool_duplicati
+    profiles:
+      - backup
+    depends_on:
+      postgres:
+        condition: service_started
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-UTC}
+      - DUPLICATI__WEBSERVICE__PASSWORD=${DUPLICATI_WEBSERVICE_PASSWORD}
+      - DUPLICATI__WEBSERVICE__LISTENURI=http://0.0.0.0:8200/
+    volumes:
+      - ./data/duplicati:/config
+      - ./data/postgres:/source/postgres:ro
+      - ./data/redis:/source/redis:ro
+      - ./instance:/source/instance:ro
+      - ./Hotshot_Rates.csv:/source/rates/Hotshot_Rates.csv:ro
+      - ./beyond_price.csv:/source/rates/beyond_price.csv:ro
+      - ./accessorial_cost.csv:/source/rates/accessorial_cost.csv:ro
+      - ./Zipcode_Zones.csv:/source/rates/Zipcode_Zones.csv:ro
+      - ./cost_zone_table.csv:/source/rates/cost_zone_table.csv:ro
+      - ./air_cost_zone.csv:/source/rates/air_cost_zone.csv:ro
+    ports:
+      - "127.0.0.1:8200:8200"
+    expose:
+      - "8200"
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsSk https://127.0.0.1:8200/ngax/index.html || exit 1"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 1m
+    restart: unless-stopped
+
+  quote_tool:
+    build: .
+    container_name: quote_tool
+    depends_on:
+      postgres:
+        condition: service_healthy
+    expose:
+      - "5000"
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app  # Mount source and database files
+    environment:
+      - FLASK_DEBUG=1
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - POSTGRES_USER=${POSTGRES_USER:-quote_tool}
+      - POSTGRES_DB=${POSTGRES_DB:-quote_tool}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DATABASE_URL=${DATABASE_URL:-postgresql+psycopg2://${POSTGRES_USER:-quote_tool}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-quote_tool}}
+      - BIGQUERY_PROJECT=${BIGQUERY_PROJECT}
+      - BIGQUERY_DATASET=${BIGQUERY_DATASET}
+      - BIGQUERY_LOCATION=${BIGQUERY_LOCATION}
+      - DB_POOL_SIZE=${DB_POOL_SIZE}
+      - CACHE_TYPE=${CACHE_TYPE}
+      - CACHE_REDIS_URL=${CACHE_REDIS_URL}
+      - RATELIMIT_STORAGE_URI=${RATELIMIT_STORAGE_URI}
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+      - COMPOSE_PROFILES=${COMPOSE_PROFILES:-}
+    networks:
+      - default
+      - internal
+    restart: unless-stopped
+
+  swag:
+    image: lscr.io/linuxserver/swag:latest
+    container_name: quote_tool_swag
+    depends_on:
+      - quote_tool
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-UTC}
+      - URL=${URL}
+      - SUBDOMAINS=${SUBDOMAINS}
+      - VALIDATION=${VALIDATION}
+      - EMAIL=${EMAIL}
+    volumes:
+      - ./deploy/swag:/config
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - default
+    restart: unless-stopped
+
+networks:
+  internal:
+    internal: true
