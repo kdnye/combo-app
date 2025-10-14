@@ -3,7 +3,7 @@ README.md
 
 Overview
 
-This repo hosts multiple app modules consolidated into one Dockerized system that runs on an internal server. Specific HTTP routes can be optionally exposed to the public internet through a reverse proxy. Goal: one build, consistent ops, minimal toil.
+This repo hosts multiple app modules that need to be consolidated into one Dockerized system that runs on an internal server. Specific HTTP routes can be optionally exposed to the public internet through a reverse proxy. Goal: one build, consistent ops, minimal toil.
 
 Features
 
