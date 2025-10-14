@@ -26,6 +26,10 @@ Each application keeps its own Dockerfiles, documentation, and tests. When new s
 | Hana Inventory | Google Apps Script that audits the "Mizuho Inventory" Google Sheet and emails weekly alerts when counts drift. | `apps/hana-inventory/app` |
 | Hotshot Quote Tool | Flask application with Alembic migrations and utilities for calculating freight quotes. | `apps/quote-tool/flask_app.py` |
 
+Visiting the Hana inventory Flask service root now presents a combined landing
+page that links to each tool. The original inventory dashboard is available at
+`/hana-inventory`.
+
 Refer to each app's README for setup, testing, and deployment details:
 
 - [`apps/expenses/README.md`](apps/expenses/README.md)
