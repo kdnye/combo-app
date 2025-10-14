@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --fsi-primary: #0f172a;
+  --fsi-secondary: #1d4ed8;
+  --fsi-accent: #10b981;
+  --fsi-bg: #f8fafc;
+  --fsi-fg: #0f172a;
+  --fsi-muted: #94a3b8;
+  --fsi-font-sans: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif;
+  --fsi-font-mono: 'JetBrains Mono', 'SFMono-Regular', ui-monospace, monospace;
+}
+
+body {
+  @apply bg-background text-foreground font-sans min-h-screen;
+  background-color: var(--fsi-bg);
+  color: var(--fsi-fg);
+}
+
+a {
+  @apply text-primary underline-offset-4 hover:underline;
+}
+
+.card-grid {
+  @apply grid gap-6 sm:grid-cols-2 lg:grid-cols-3;
+}
+
+.card {
+  @apply bg-white shadow-soft rounded-2xl p-6 flex flex-col gap-4 border border-slate-100 transition-transform hover:-translate-y-1 focus-within:ring-2 focus-within:ring-primary;
+}
+
+.card-header {
+  @apply flex items-center gap-3;
+}
+
+.card-icon {
+  @apply flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary;
+}
+
+.card-footer {
+  @apply mt-auto;
+}
+
+.badge {
+  @apply inline-flex items-center rounded-full bg-secondary/15 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-secondary;
+}
+
+:root[data-theme='dark'] {
+  /* TODO: replace with official dark-mode tokens if available */
+}
