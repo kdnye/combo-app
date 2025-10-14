@@ -31,6 +31,15 @@ Copy `.env.example` to `.env.local` and adjust as needed:
 - `npm run typecheck` – run TypeScript type checking.
 - `npm run test` – execute Vitest unit tests.
 
+## Docker Compose support
+
+The repository-wide `infra/compose/dev.yml` file defines a `core-freight-services`
+service that runs `npm run dev` inside a Node 20 container. Use
+`docker compose -f infra/compose/dev.yml up --build` to start the launcher alongside
+the expenses and quote tool applications. Source code is mounted into the
+container so changes trigger hot reloads, and dependencies persist in a dedicated
+`core-freight-services-node-modules` volume between restarts.
+
 ## Feature Flags
 
 - `NEXT_PUBLIC_OPEN_LINKS_NEW_TAB` sets the default behavior for tool links.
