@@ -8,7 +8,36 @@ from typing import Any
 
 from flask import Flask, current_app, g
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
+def _discover_project_root(start: Path) -> Path:
+    """Return the repository root used for local imports.
+
+    Args:
+        start: Absolute path to a file within the project. The helper walks up
+            the directory tree from this location.
+
+    Returns:
+        The first parent directory containing a repository marker such as
+        ``pyproject.toml`` or ``.git``. When no structural markers are found the
+        helper returns the closest ancestor that includes one of the known
+        marker files.
+
+    External dependencies:
+        Relies on :class:`pathlib.Path` for filesystem inspection and does not
+        perform any I/O beyond existence checks.
+    """
+
+    markers = {"pyproject.toml", "setup.cfg", "requirements.txt", ".git"}
+    current = start
+    fallback = current
+    for parent in (current, *current.parents):
+        if (parent / "apps").is_dir() and (parent / "packages").is_dir():
+            return parent
+        if any((parent / marker).exists() for marker in markers):
+            fallback = parent
+    return fallback
+
+
+PROJECT_ROOT = _discover_project_root(Path(__file__).resolve().parent)
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.append(str(PROJECT_ROOT))
 
