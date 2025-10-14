@@ -1,40 +1,15 @@
-'use client';
-
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { type ReactNode } from 'react';
 import { appConfig } from '@/config';
 import { PreferencesProvider } from '@/components/preferences/preferences-provider';
 import { AuthProvider } from '@/components/auth/auth-provider';
 import { BrandLogo } from '@/components/BrandLogo';
 import { Button } from '@/components/ui/button';
+import { TopNav } from '@/components/navigation/TopNav';
 
 const navLinks = [
   { href: '/', label: 'Dashboard' },
   { href: '/settings', label: 'Settings' }
 ];
-
-const TopNav = () => {
-  const pathname = usePathname();
-  return (
-    <nav aria-label="Primary" className="flex items-center gap-2 text-sm font-medium">
-      {navLinks.map((link) => {
-        const isActive = pathname === link.href;
-        return (
-          <Link
-            key={link.href}
-            className={`rounded-full px-4 py-2 transition-colors ${
-              isActive ? 'bg-primary text-white' : 'text-primary/80 hover:bg-primary/10'
-            }`}
-            href={link.href}
-          >
-            {link.label}
-          </Link>
-        );
-      })}
-    </nav>
-  );
-};
 
 type ShellContainerProps = {
   children: ReactNode;
@@ -52,7 +27,7 @@ const ShellContainer = ({ children }: ShellContainerProps) => (
           </div>
         </div>
         <div className="flex items-center gap-6">
-          <TopNav />
+          <TopNav links={navLinks} />
           <Button aria-label="User menu placeholder" className="hidden sm:inline-flex" variant="outline">
             User
           </Button>
