@@ -26,9 +26,10 @@ Each application keeps its own Dockerfiles, documentation, and tests. When new s
 | Hana Inventory | Google Apps Script that audits the "Mizuho Inventory" Google Sheet and emails weekly alerts when counts drift. | `apps/hana-inventory/app` |
 | Hotshot Quote Tool | Flask application with Alembic migrations and utilities for calculating freight quotes. | `apps/quote-tool/flask_app.py` |
 
-Visiting the Hana inventory Flask service root now presents a combined landing
-page that links to each tool. The original inventory dashboard is available at
-`/hana-inventory`.
+Authenticated quote tool users land on `/workspace`, a dedicated operations hub
+that highlights the quoting workflow and exposes quick links to the supporting
+applications. The Hana inventory dashboard remains available at
+`/hana-inventory` for legacy bookmarks.
 
 Refer to each app's README for setup, testing, and deployment details:
 
@@ -39,15 +40,15 @@ Refer to each app's README for setup, testing, and deployment details:
 ## Container image for unified landing page
 
 Deployments that target the repository root can now build a single container
-image using the top-level `Dockerfile`. The resulting image runs the Hana
-inventory Flask application, which also serves the combined landing page that
-links to the Expenses and Hotshot Quote Tool services. Configure the link
-destinations at runtime with the following environment variables:
+image using the top-level `Dockerfile`. The resulting image runs the quote tool
+Flask application, which surfaces the new `/workspace` landing page alongside
+the quoting features. Configure cross-application links at runtime with the
+following environment variables:
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
+| `HANA_INVENTORY_URL` | `http://localhost:8000/hana-inventory` | Location of the Hana dashboard |
 | `EXPENSES_APP_URL` | `http://localhost:8080/` | Location of the Expenses UI |
-| `QUOTE_TOOL_APP_URL` | `http://localhost:5000/` | Location of the Hotshot Quote Tool |
 
 Set `PORT` (defaults to `8000`) if your hosting platform requires binding to a
 specific port. The container uses Gunicorn as the process manager and stores its

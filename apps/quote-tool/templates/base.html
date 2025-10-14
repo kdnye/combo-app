@@ -42,6 +42,9 @@
               </a>
             </li>
             {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('workspace.home') }}">Workspace</a>
+            </li>
             {% if current_user.role == 'super_admin' or current_user.is_admin %}
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a>

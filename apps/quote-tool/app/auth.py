@@ -212,7 +212,7 @@ def login() -> Union[str, Response]:
 
     Returns:
         Renders ``login.html`` on GET or failed login.
-        Redirects to ``quotes.new_quote`` on success.
+        Redirects to ``workspace.home`` on success.
     """
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
@@ -223,7 +223,7 @@ def login() -> Union[str, Response]:
         user = User.query.filter_by(email=email).first()
         if user and user.check_password(password) and user.is_active:
             login_user(user)
-            return redirect(url_for("quotes.new_quote"))
+            return redirect(url_for("workspace.home"))
         flash("Invalid credentials", "danger")
     return render_template("login.html")
 

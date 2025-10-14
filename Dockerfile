@@ -7,11 +7,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-COPY apps/hana-inventory/requirements.txt ./requirements.txt
+COPY apps/quote-tool/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY apps/hana-inventory/app ./app
-COPY apps/hana-inventory/wsgi.py ./wsgi.py
+COPY apps/quote-tool/ ./
 
 RUN useradd --create-home --shell /usr/sbin/nologin appuser \
     && chown -R appuser:appuser /app
@@ -23,4 +22,4 @@ ENV FLASK_ENV=production \
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8000} wsgi:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8000} flask_app:app"]

@@ -105,15 +105,9 @@ def test_dashboard_context_contains_expected_data(client):
             assert summary.delta == pytest.approx(expected_actual - expected_total)
 
 
-def test_home_renders_app_directory(client, app):
-    response = client.get("/")
-    assert response.status_code == 200
+def test_root_redirects_to_dashboard(client):
+    """The legacy root URL should redirect to the inventory dashboard."""
 
-    html = response.get_data(as_text=True)
-    with app.test_request_context():
-        for entry in app.config["APP_DIRECTORY"]:
-            assert entry["name"] in html
-            expected_url = entry.get("url")
-            if expected_url is None:
-                expected_url = url_for(entry["endpoint"])
-            assert expected_url in html
+    response = client.get("/")
+    assert response.status_code == 302
+    assert response.headers["Location"].rstrip("/").endswith("/hana-inventory")
