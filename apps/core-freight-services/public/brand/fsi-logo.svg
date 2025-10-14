@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="title desc">
+  <title id="title">Freight Services International Logo Placeholder</title>
+  <desc id="desc">Stylized initials FSI inside a rounded square.</desc>
+  <rect width="120" height="120" rx="24" fill="var(--fsi-primary, #0f172a)" />
+  <path
+    d="M32 86V34h52v12H46v8h32v12H46v20H32Zm42 0V70h14v16H74Z"
+    fill="var(--fsi-bg, #f8fafc)"
+  />
+</svg>
