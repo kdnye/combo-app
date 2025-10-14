@@ -1,0 +1,75 @@
+name: combo-app
+
+services:
+  expenses-web:
+    build:
+      context: ./apps/expenses
+    environment:
+      EXPENSES_DATABASE: sqlite:////app/instance/expenses.db
+      EXPENSES_UPLOADS: /app/instance/uploads
+      EXPENSES_SECRET_KEY: dev-secret
+    volumes:
+      - ./apps/expenses/instance:/app/instance
+    ports:
+      - "8080:8000"
+
+  core-freight-services:
+    image: node:20-alpine
+    working_dir: /app
+    command: >-
+      sh -c "npm install && npm run dev -- --hostname 0.0.0.0 --port 3000"
+    environment:
+      NEXT_TELEMETRY_DISABLED: "1"
+      NEXT_PUBLIC_QUOTE_TOOL_URL: http://quote-tool:5000/
+      NEXT_PUBLIC_EXPENSE_TOOL_URL: http://expenses-web:8000/
+      CHOKIDAR_USEPOLLING: "1"
+      PORT: "3000"
+    depends_on:
+      quote-tool:
+        condition: service_started
+      expenses-web:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/ > /dev/null 2>&1 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./apps/core-freight-services:/app
+      - core-freight-services-node-modules:/app/node_modules
+
+  quote-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: quote_tool
+      POSTGRES_PASSWORD: quote_tool
+      POSTGRES_DB: quote_tool
+    volumes:
+      - quote-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quote_tool"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  quote-tool:
+    build:
+      context: ./apps/quote-tool
+    environment:
+      FLASK_APP: flask_app.py
+      FLASK_ENV: development
+      DATABASE_URL: postgresql+psycopg2://quote_tool:quote_tool@quote-db:5432/quote_tool
+    depends_on:
+      quote-db:
+        condition: service_healthy
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./apps/quote-tool:/app
+
+volumes:
+  quote-data:
+  core-freight-services-node-modules:
