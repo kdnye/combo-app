@@ -22,7 +22,7 @@ from sqlalchemy.exc import NoResultFound
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
-from packages.fsi_common import ExpenseItem, ExpenseReport
+from ..shared_models import ExpenseItem, ExpenseReport
 
 from .. import get_repository
 from ..forms import parse_expense_form, parse_report_form

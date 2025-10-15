@@ -129,18 +129,35 @@ export const cssVariables = {
 };
 
 export type TailwindThemeExtension = {
-  colors: Record<string, string>;
+  colors: Record<string, string | { DEFAULT: string; foreground?: string }>;
   fontFamily: Record<string, string>;
 };
 
+const withAlpha = (variable: string): string => `rgb(var(${variable}) / <alpha-value>)`;
+
 export const tailwindTheme: TailwindThemeExtension = {
   colors: {
-    primary: 'rgb(var(--fsi-primary-rgb) / <alpha-value>)',
-    secondary: 'rgb(var(--fsi-secondary-rgb) / <alpha-value>)',
-    accent: 'rgb(var(--fsi-accent-rgb) / <alpha-value>)',
-    background: 'rgb(var(--fsi-bg-rgb) / <alpha-value>)',
-    foreground: 'rgb(var(--fsi-fg-rgb) / <alpha-value>)',
-    muted: 'rgb(var(--fsi-muted-rgb) / <alpha-value>)'
+    primary: {
+      DEFAULT: withAlpha('--fsi-primary-rgb'),
+      foreground: withAlpha('--fsi-bg-rgb')
+    },
+    secondary: {
+      DEFAULT: withAlpha('--fsi-secondary-rgb'),
+      foreground: withAlpha('--fsi-bg-rgb')
+    },
+    accent: {
+      DEFAULT: withAlpha('--fsi-accent-rgb'),
+      foreground: withAlpha('--fsi-bg-rgb')
+    },
+    background: {
+      DEFAULT: withAlpha('--fsi-bg-rgb'),
+      foreground: withAlpha('--fsi-fg-rgb')
+    },
+    foreground: withAlpha('--fsi-fg-rgb'),
+    muted: {
+      DEFAULT: withAlpha('--fsi-muted-rgb'),
+      foreground: withAlpha('--fsi-fg-rgb')
+    }
   },
   fontFamily: {
     sans: 'var(--fsi-font-sans)',
