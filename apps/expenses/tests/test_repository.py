@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date
 from decimal import Decimal
 
-from packages.fsi_common import ExpenseItem, ExpenseReport
+from fsi_expenses_web.shared_models import ExpenseItem, ExpenseReport
 
 from fsi_expenses_web.repositories import ExpensesRepository
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Iterable, List
 
-from packages.fsi_common import (
+from .shared_models import (
     ExpenseCategory,
     ExpenseReport,
     ReportSummary,

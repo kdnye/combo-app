@@ -11,7 +11,7 @@ from sqlalchemy import delete, insert, select, update
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import NoResultFound
 
-from packages.fsi_common import ExpenseItem, ExpenseReport
+from .shared_models import ExpenseItem, ExpenseReport
 
 from .database import expense_items, expense_reports, session_scope
 
